@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class='container'>
+
+
+{% if user == person %}
+{% else %}
+  {% if user in person.follower.all %}
+  <a href="{% url 'accounts:follow' person.pk %}" class='btn btn-secondary'>언팔로우</a>
+  {% else %}
+  <a href="{% url 'accounts:follow' person.pk %}" class='btn btn-primary'>팔로우</a>
+  {% endif %}
+{% endif %}
+
+<hr>
+<h1>유저정보</h1>
+<p>아이디: {{ person.username }}</p>
+<p>이름: {{ person.last_name}} {{ person.first_name }}</p>
+<p>이메일: {{ person.email }}</p>
+<!-- follow -->
+{% with followers=person.follower.all followings=person.followings.all %}
+<hr>
+<h5>팔로잉</h5>
+ {% for following in followings %}
+  <p>{{ following.username }}</p>
+  {% endfor %}
+
+<hr>
+
+<h5>팔로워</h5>
+  {% for follower in followers %}
+  <p>{{ follower.username}}</p>
+  {% endfor %}
+{% endwith %}
+
+
+<hr>
+<h4>리뷰&평점정보</h4>
+{% for review in reviews %}
+<p>영화: {{review.movie.title}}</p>
+리뷰: {{ review.content }} -> 평점: {{review.score}}
+<hr>
+{% empty %}
+<h3>리뷰가 없음. 좀 남겨주셈</h3>
+<hr>  
+{% endfor %}
+
+
+
+<h4>좋아하는 영화 평점정보</h4>
+{% for like_movie in movies %}
+  {% for like_review in like_movie.review_set.all %}
+    {% if like_review.user == person %}
+    <hr>
+    <p>리뷰:{{ like_review.content }}</p>
+    <p>평점:{{ like_review.score }}</p>
+    
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+
+</div>
+{% endblock %}
