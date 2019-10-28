@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block body %}
+
+<div class='container'>
+  <h1>MOVIE DETAIL</h1>
+  <div class="row">
+
+    <div class="card col-6" style="width: 30rem;">
+        
+      <a href="{% url 'movies:detail' movie.pk %}"><img src='{{movie.poster_url}}' class="card-img-top img-thumbnail"
+          alt="#"></a>
+          <div class="card-body"> 
+        <h2>{{movie.title}}</h2>
+        <p>장르: <span class='badge badge-primary'>{{ movie.genre.name }}</span></p>
+        <p>관람객: <span class='badge badge-secondary'>{{ movie.audience }}</span></p>
+        <p>
+          <h5>좋아요 수: {{movie.like_user.count }}</h5>
+          {% if request.user in movie.like_user.all %}
+        <a href="{% url 'movies:like' movie.pk %}" class='btn btn-danger'>안좋아요</a>
+        {% else %}
+        <a href="{% url 'movies:like' movie.pk %}" class='btn btn-primary'>좋아요</a>
+        {% endif %}
+        </p>
+        <hr>
+        <h5>상세설명</h5>
+        <p> {{ movie.description }}</p>
+      </div>
+    </div>
+    <div class="card col-6" style="width: 30rem;">
+      <div class='card-body'>
+        <!-- review -->
+        <h3>평점</h3>
+        {% for review in reviews %}
+        <h5>{{review.user}}</h5>
+        <p>리뷰: {{ review.content }}</p>
+        <p>평점: {{review.score}}</p>
+        <hr>
+        {% endfor %}
+        <form action="{% url 'movies:create_review' movie.pk %}" method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <input type="submit" value="제출">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
